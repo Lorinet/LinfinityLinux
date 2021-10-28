@@ -24,8 +24,6 @@ EOF
     echo -e "/dev/sda1 / ext4 defaults,errors=remount-ro 0 1\ntmpfs /tmpfs tmpfs rw,nosuid,nodev 0 0" > rootfs/etc/fstab
     echo "linfinity" > rootfs/etc/hostname
     echo "localhost     linfinity\n127.0.0.1    linfinity\n::1      linfinity ip6-localhost ip6-loopback\nff02::1       ip6-allnodes\nff02::2       ip6-allrouters" > /etc/hosts
-    mkdir -pv rootfs/usr/share/sddm/themes
-    cp -r linfinity-sddm rootfs/usr/share/sddm/themes/
 }
 
 function enterChroot {
@@ -44,12 +42,13 @@ function configureRootfs {
     mkdir rootfs/setup
     cp chroot.sh rootfs/setup
     cp bootloader.sh rootfs/setup
-    cp firstboot.sh rootfs/setup
-    mkdir -pv rootfs/etc/systemd/system
-    cp firstboot.service rootfs/etc/systemd/system/
+    cp postinst.sh rootfs/setup
     cp -r extensions/* rootfs/usr/share/gnome-shell/extensions/
     cp lsb-release rootfs/etc/
     cp os-release rootfs/etc/
+    cp -r LinfinityOOBE rootfs/setup/
+    mkdir -pv rootfs/root/.config/autostart
+    cp oobe.desktop rootfs/root/.config/autostart
     enterChroot rootfs /setup/chroot.sh
 }
 

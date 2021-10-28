@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=OOBE
+Exec=python3 /setup/LinfinityOOBE/oobe.py
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true
