@@ -1,0 +1,13 @@
+NAME="Linfinity Linux"
+VERSION="1"
+ID=linfinity
+ID_LIKE="ubuntu debian"
+PRETTY_NAME="Linfinity Linux"
+VERSION_ID="1"
+HOME_URL="http://linfinity.rf.gd"
+SUPPORT_URL="http://linfinity.rf.gd"
+BUG_REPORT_URL=""
+PRIVACY_POLICY_URL="http://linfinity.rf.gd"
+VERSION_CODENAME=impish
+UBUNTU_CODENAME=impish
+LOGO=distributor-logo-debian
