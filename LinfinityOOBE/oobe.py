@@ -378,7 +378,7 @@ class OOBE:
             dialog.run()
             dialog.destroy()
         else:
-            cmd = 'PCM="useradd -m -d /home/' + un + ' -s /bin/bash -p $(openssl passwd -1 "' + pw + '") ' + un + '"; /bin/bash -c "$PCM"'
+            cmd = 'useradd -m -d /home/' + un + ' -s /bin/bash -p $(echo ' + pw + ' | openssl passwd -1 -stdin) ' + un;
             os.system(cmd)
             self.advance(widget)
 
