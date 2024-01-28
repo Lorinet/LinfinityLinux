@@ -52,9 +52,23 @@ EOF
     sudo mount ${lodev}p1 rootfs/boot/efi
 }
 
+function mount {
+    lodev=$(sudo losetup -f)
+    sudo losetup $lodev linfinity.linux.img
+    sudo partprobe $lodev
+    sudo mkdir rootfs
+    sudo mount ${lodev}p2 rootfs
+    sudo mount ${lodev}p1 rootfs/boot/efi
+}
+
 function unmount {
+    dv=$(grep -w rootfs /proc/mounts | cut -d " " -f)
     sudo umount rootfs/boot/efi
     sudo umount rootfs
+    sudo losetup -d $dv
+    sudo losetup -d ${dv}p1
+    sudo losetup -d ${dv}p2
+    sudo partprobe
 }
 
 function chroot {
@@ -72,13 +86,33 @@ function chroot {
 
 function buildBase {
     echo "Building base system..."
-    sudo mkdir linfinity
-    sudo debootstrap --arch amd64 --variant=minbase --include=systemd,systemd-sysv,systemd-boot,gdm3,gnome-core --exclude=sysvinit-core,sysvinit-utils bookworm rootfs http://deb.debian.org/debian
+    sudo debootstrap --arch amd64 --variant=minbase --include=systemd,systemd-sysv,systemd-boot,wget --exclude=sysvinit-core,sysvinit-utils bookworm rootfs http://deb.debian.org/debian
+}
+
+function setup {
+    sudo mkdir rootfs/setup
+    sudo cp setup.sh rootfs/setup
+    sudo cp -r extensions rootfs/setup
+    sudo cp -r packages rootfs/setup
+    sudo mount --rbind /proc rootfs/proc
+    sudo mount --rbind /sys rootfs/sys
+    sudo mount --rbind /dev rootfs/dev
+    sudo chroot rootfs /bin/bash /setup/setup.sh
+    sudo mount --make-rslave rootfs/dev/
+    sudo umount -R -l rootfs/dev/
+    sudo mount --make-rslave rootfs/sys/
+    sudo umount -R -l rootfs/sys
+    sudo mount --make-rslave rootfs/proc/
+    sudo umount -R -l rootfs/proc
 }
 
 function cleanup {
     echo "Cleaning up"
     sudo rm -rf linfinity
+}
+
+function run {
+    qemu-system-x86_64 -accel kvm -vga qxl -bios /usr/share/ovmf/OVMF.fd -m 4096 -hda linfinity.linux.img
 }
 
 $1 $2
